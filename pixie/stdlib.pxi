@@ -1457,24 +1457,16 @@ and implements IAssociative, ILookup and IObject."
                     indent (fn [s]
                              (if (>= (pixie.string.internal/index-of s "\n") 0)
                                (apply str "\n" (map #(str "  " % "\n") (pixie.string.internal/split s "\n")))
-                               s))]
-                (println (str (namespace vr) "/" (name vr)))
-                (if sigs
-                  (prn (seq sigs)))
-                (if doc
-                  (do (println)
-                      (println doc)))
-                (if examples
-                  (do
-                    (println)
-                    (doseq [example examples]
-                      (println (str "  user => " (indent (first  example))))
-                      (if (second example)
-                        (print (indent (second example))))
-                      (if (contains? example 2)
-                        (println (str "  " (-repr (third example))))))))
-                (println)
-                nil)
+                               s))
+                    example-text (apply str (map (fn [example]
+                                                   (cond-> (str "  user => " (indent (first example)) "\n")
+                                                     (second example) (str (indent (second example)) "\n")
+                                                     (contains? example 2) (str "  " (-repr (third example)) "\n")))
+                                                 examples))]
+                (cond-> (str (namespace vr) "/" (name vr) "\n")
+                  sigs (str (seq sigs) "\n")
+                  doc (str "\n" doc "\n")
+                  examples (str "\n" example-text)))
      (the-ns v) (doc-ns v))))
 
 (defn doc-ns
